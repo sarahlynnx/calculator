@@ -1,0 +1,63 @@
+body {
+    background-color:bisque;
+}
+
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    width:320px;
+    height: 400px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 5px;
+    border: 2px solid white;
+}
+
+#display-container {
+    background-color: white;
+}
+
+#display {
+    margin: 5px;
+    height: 35px;
+    text-align: right;
+    font-size: 30px;
+}
+
+#calculation-display {
+    margin: 5px;
+    height: 20px;
+    text-align: right;
+    font-size: 20px;
+}
+
+.buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+button {
+    height: 65px;
+    width: 80px;
+}
+
+.bottom-buttons {
+    width: 240px;
+}
+
+#clear {
+    width: 160px;
+}
+
+#zero {
+    width: 160px;
+}
+
+#equals {
+    height: 130px;
+}
+
+
