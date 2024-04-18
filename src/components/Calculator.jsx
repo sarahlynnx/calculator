@@ -1,22 +1,105 @@
 import React, {useState} from "react";
 
 const Calculator = () => {
-    const [display, setDisplay] = useState(0);
+    const [display, setDisplay] = useState('0');
+    const [currentValue, setCurrentValue] = useState('');
+    const [prevValue, setPrevValue] = useState('');
     const [calculationDisplay, setCalculationDisplay] = useState('');
+    const [operator, setOperator] = useState('');
 
     const handleClearDisplay = () => {
+        setCurrentValue('');
         setDisplay('0');
         setCalculationDisplay('');
+        setPrevValue('');
+        setOperator('');
     }
 
     const handleNumberInput = (number) => {
-        if (display === '0') {
-            setDisplay(number);
+        if (number === '.') {
+            if (currentValue.includes('.')) 
+                return;
+            if (currentValue === '') {
+                setCurrentValue('0.');
+                setDisplay('0.');
+            } else {
+                setCurrentValue(currentValue + '.');
+                setDisplay(currentValue + '.');
+            }
+        }
+        if (display === '0' || currentValue === '') {
+            setCurrentValue(number.toString());
+            setDisplay(number.toString());
         } else {
-            setDisplay(display + number);
+            setCurrentValue(currentValue + number.toString());
+            setDisplay(currentValue + number.toString());
+        }
+
+
+        if (prevValue === '') {
+            setCalculationDisplay(number.toString());
+            setPrevValue(number.toString());
+        } else {
+            const lastChar = calculationDisplay.slice(-1);
+            if (['+', '-', 'x', '/'].includes(lastChar) && currentValue === '-') {
+                setCalculationDisplay(`${calculationDisplay}${number}`);
+            } else if (['+', '-', 'x', '/'].includes(lastChar)) {
+                setCalculationDisplay(`${calculationDisplay} ${number}`);
+            } else {
+                setCalculationDisplay(`${calculationDisplay}${number}`);
+            }
         }
     }
 
+    const handleOperators = (op) => {
+        if (operator === '') {
+            setPrevValue(currentValue);
+            setCurrentValue('');
+            setOperator(op);
+            setDisplay('0');
+            setCalculationDisplay(`${calculationDisplay} ${op}`);
+        } else if (operator !== '' && currentValue === '' && op === '-') {
+            setCurrentValue('-');
+            setDisplay('-');
+            setCalculationDisplay(`${calculationDisplay} -`);
+        } else {
+            let result = calculate();
+            setPrevValue(result);
+            setOperator(op);
+            setCalculationDisplay(`${calculationDisplay} ${op}`);
+            setCurrentValue('');
+            setDisplay(result);
+        }
+    };
+    
+
+    const handleEqual = () => {
+        if (prevValue && currentValue && operator) {
+            const result = calculate();
+            setPrevValue('');
+            setCurrentValue(result);
+            setDisplay(result);
+            setOperator('');
+            setCalculationDisplay(`${calculationDisplay} = ${result}`);
+        }
+    }
+
+    const calculate = () => {
+        const prev = parseFloat(prevValue);
+        const current = parseFloat(currentValue);
+        switch(operator) {
+            case '-': 
+               return String(prev - current);
+            case '+': 
+                return String(prev + current);
+            case '/': 
+                return String(prev / current);
+            case 'x': 
+                return String(prev * current);
+            default: 
+                return;
+        }
+    }
 
     return(
         <>
@@ -28,20 +111,20 @@ const Calculator = () => {
             <div className="buttons-container">
                 <div>
                     <button id="clear" onClick={handleClearDisplay}>AC</button>
-                    <button className="operators" id="divide">/</button>
-                    <button className="operators" id="multiply">x</button>
+                    <button className="operators" id="divide" onClick={() => handleOperators('/')}>/</button>
+                    <button className="operators" id="multiply" onClick={() => handleOperators('x')}>x</button>
                 </div>
                 <div>
                     <button onClick={() => handleNumberInput('7')} id="seven">7</button>
                     <button onClick={() => handleNumberInput('8')} id="eight">8</button>
                     <button onClick={() => handleNumberInput('9')} id="nine">9</button>
-                    <button className="operators" id="subtract">-</button>
+                    <button className="operators" id="subtract" onClick={() => handleOperators('-')}>-</button>
                 </div>
                 <div>
                     <button onClick={() => handleNumberInput('4')} id="four">4</button>
                     <button onClick={() => handleNumberInput('5')} id="five">5</button>
                     <button onClick={() => handleNumberInput('6')} id="six">6</button>
-                    <button className="operators" id="add">+</button>
+                    <button className="operators" id="add" onClick={() => handleOperators('+')}>+</button>
                 </div>
                 <div className="bottom-buttons">
                     <button onClick={() => handleNumberInput('1')} id="one">1</button>
@@ -51,7 +134,7 @@ const Calculator = () => {
                     <button onClick={() => handleNumberInput('.')} id="decimal">.</button>
                 </div>
                 <div>
-                <button id="equals">=</button>
+                <button id="equals" onClick={handleEqual}>=</button>
                 </div>
             </div>
         </div>
