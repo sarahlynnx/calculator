@@ -52,23 +52,33 @@ const Calculator = () => {
     }
 
     const handleOperators = (op) => {
-        if (operator === '') {
+        if (operator === '' && currentValue !== '') {
             setPrevValue(currentValue);
             setCurrentValue('');
             setOperator(op);
             setDisplay('0');
-            setCalculationDisplay(`${calculationDisplay} ${op}`);
-        } else if (operator !== '' && currentValue === '' && op === '-') {
-            setCurrentValue('-');
-            setDisplay('-');
-            setCalculationDisplay(`${calculationDisplay} -`);
+            setCalculationDisplay(calculationDisplay + ' ' + op);
+        } else if (operator !== '' && currentValue === '') {
+            if (op === '-' && !calculationDisplay.endsWith('-')) {
+                setCurrentValue('-');
+                setDisplay('-');
+                setCalculationDisplay(calculationDisplay + ' -');   
+            } else {
+                setCalculationDisplay(calculationDisplay.slice(0, -1) + op);
+            }
+        } else if (currentValue === '-' && operator !== '') {
+            let lastIndex = calculationDisplay.lastIndexOf(operator);
+            let newCalculationDisplay = calculationDisplay.slice(0, lastIndex-1) + ' ' + op;
+            setOperator(op);
+            setCurrentValue('');
+            setCalculationDisplay(newCalculationDisplay);
         } else {
             let result = calculate();
-            setPrevValue(result);
-            setOperator(op);
-            setCalculationDisplay(`${calculationDisplay} ${op}`);
-            setCurrentValue('');
-            setDisplay(result);
+                setPrevValue(result);
+                setOperator(op);
+                setCalculationDisplay(calculationDisplay + ' ' + op);
+                setCurrentValue('');
+                setDisplay(result);
         }
     };
     
